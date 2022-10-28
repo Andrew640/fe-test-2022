@@ -1,0 +1,32 @@
+<div class="home">
+  <table *ngFor="let cost of costs?.costs">
+    <tr>
+      <th>{{ cost.name }}</th>
+      <th *ngIf="cost.name === 'Port Expenses'">Account code</th>
+      <th>Quoted</th>
+      <th>Screened</th>
+    </tr>
+    <tr *ngFor="let costItem of cost.costItems">
+      <td [class]="cost.name === 'Port Specific' ? 'wider' : ''">
+        {{ costItem.name }}
+      </td>
+      <td *ngIf="cost.name === 'Port Expenses'">
+        {{ costItem.costItemAlias.accountingCode }}
+      </td>
+      <td>
+        <span>SGD </span
+        >{{
+          getCostItemCost(COST_TYPES.QUOTED, costItem.costs).amount
+            | currency: "":""
+        }}
+      </td>
+      <td class="cost-item-cost">
+        <span>SGD </span
+        >{{
+          getCostItemCost(COST_TYPES.SCREENED, costItem.costs).amount
+            | currency: "":""
+        }}
+      </td>
+    </tr>
+  </table>
+</div>
