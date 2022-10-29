@@ -1,19 +1,58 @@
+@import "../../../styles/variables.scss";
+
 .home {
+  font-family: "Roboto", sans-serif;
+  margin: 20px;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    .title {
+      margin-bottom: 20px;
+    }
+    .currency-select {
+      label {
+        margin-right: 20px;
+      }
+      select {
+        width: 100px;
+      }
+    }
+  }
+
   table {
+    font-family: "Roboto", sans-serif;
     width: 100%;
-    margin-top: 50px;
     margin-bottom: 50px;
     border-collapse: collapse;
+    border: 1px solid #e4e4e4;
+  }
+
+  th {
+    background-color: $brand-blue;
+    font-weight: 400;
+    color: #fff;
   }
 
   td,
   th {
+    font-family: "Roboto", sans-serif;
     width: 25%;
     padding: 10px;
     text-align: left;
-    border: 1px solid #e4e4e4;
     &.wider {
       width: 50%;
     }
+  }
+
+  .error-message {
+    border: 1px solid $warning-red;
+    border-radius: 6px;
+    text-align: center;
+    color: $warning-red;
+    background-color: $warning-red-light;
+    padding: 30px;
+    margin: 30px auto 0 auto;
+    width: 60%;
   }
 }
