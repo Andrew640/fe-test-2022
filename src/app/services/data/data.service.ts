@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Costs, ExchangeRates } from '../../interfaces/costs.interface';
+import { Costs } from '../../interfaces/costs.interface';
 import { Observable } from 'rxjs';
+import { ExchangeRates } from 'src/app/interfaces/exchange-rates.interface';
 
 @Injectable({
   providedIn: 'root',

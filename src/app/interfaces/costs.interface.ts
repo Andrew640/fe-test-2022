@@ -1,32 +1,4 @@
-import { Data } from '@angular/router';
-
-export interface ResolverData extends Data {
-  costs: Costs;
-  exchangeRates: ExchangeRates;
-}
-
-export type Currency =
-  | 'USD'
-  | 'AED'
-  | 'AUD'
-  | 'CAD'
-  | 'CHF'
-  | 'DKK'
-  | 'EUR'
-  | 'GBP'
-  | 'INR'
-  | 'JPY'
-  | 'MAD'
-  | 'NOK'
-  | 'NZD'
-  | 'SAR'
-  | 'SEK'
-  | 'SGD'
-  | 'THB'
-  | 'TRY'
-  | 'USD'
-  | 'ZAR';
-
+import { Currency } from './shared.interface';
 export interface Costs {
   daCurrency: {
     currency: Currency;
@@ -75,5 +47,3 @@ export interface CostTypeItemComment {
   type: string;
   date: string;
 }
-
-export interface ExchangeRates {}
