@@ -14,65 +14,175 @@
         </select>
       </div>
     </header>
-    <table *ngFor="let cost of costs.costs">
+    <table *ngFor="let cost of costs.costs; let tableIndex = index">
       <tr>
         <th>{{ cost.name }}</th>
         <th *ngIf="cost.name === 'Port Expenses'">Account code</th>
-        <th>Quoted</th>
+        <th class="quoted">Quoted</th>
         <th>Screened</th>
+        <th></th>
       </tr>
-      <tr *ngFor="let costItem of cost.costItems">
-        <td [class]="cost.name === 'Port Specific' ? 'wider' : ''">
-          {{ costItem.name }}
-        </td>
-        <td *ngIf="cost.name === 'Port Expenses'">
-          {{ costItem.costItemAlias.accountingCode }}
-        </td>
-        <td>
-          <div>
-            <span>{{ selectedCurrencyInfo.toCurrency }} </span
-            >{{
-              getCostItemCostEx(
-                COST_TYPES.QUOTED,
-                costItem.costs,
-                selectedCurrencyInfo.exchangeRate
-              ) | currency: "":""
-            }}
-          </div>
-          <div>
-            <span>{{ costs.baseCurrency.currency }} </span>
-            {{
-              getCostItemCostEx(
-                COST_TYPES.QUOTED,
-                costItem.costs,
-                costs.baseCurrency.exchangeRate
-              ) | currency: "":""
-            }}
-          </div>
-        </td>
-        <td class="cost-item-cost">
-          <div>
-            <span>{{ selectedCurrencyInfo.toCurrency }} </span
-            >{{
-              getCostItemCostEx(
-                COST_TYPES.QUOTED,
-                costItem.costs,
-                selectedCurrencyInfo.exchangeRate
-              ) | currency: "":""
-            }}
-          </div>
-          <div>
-            <span>{{ costs.baseCurrency.currency }} </span>
-            {{
-              getCostItemCostEx(
-                COST_TYPES.QUOTED,
-                costItem.costs,
-                costs.baseCurrency.exchangeRate
-              ) | currency: "":""
-            }}
-          </div>
-        </td>
-      </tr>
+      <tbody *ngFor="let costItem of cost.costItems; let rowIndex = index">
+        <tr
+          [class]="displayCommentsSection(tableIndex, rowIndex) ? '' : 'main'"
+        >
+          <td [class]="cost.name === 'Port Specific' ? 'wider' : ''">
+            {{ costItem.name }}
+          </td>
+          <td *ngIf="cost.name === 'Port Expenses'">
+            {{ costItem.costItemAlias.accountingCode }}
+          </td>
+          <td>
+            <div class="dark-currency">
+              <span class="dark-currency-code"
+                >{{ selectedCurrencyInfo.toCurrency }} </span
+              >{{
+                getCostItemCostEx(
+                  COST_TYPES.QUOTED,
+                  costItem.costs,
+                  selectedCurrencyInfo.exchangeRate
+                ) | currency: "":""
+              }}
+            </div>
+            <div class="base-currency">
+              <span class="base-currency-code"
+                >{{ costs.baseCurrency.currency }}
+              </span>
+              {{
+                getCostItemCostEx(
+                  COST_TYPES.QUOTED,
+                  costItem.costs,
+                  costs.baseCurrency.exchangeRate
+                ) | currency: "":""
+              }}
+            </div>
+          </td>
+          <td>
+            <div class="screened-currency">
+              <span class="screened-currency-code">{{
+                selectedCurrencyInfo.toCurrency
+              }}</span
+              >{{
+                getCostItemCostEx(
+                  COST_TYPES.SCREENED,
+                  costItem.costs,
+                  selectedCurrencyInfo.exchangeRate
+                ) | currency: "":""
+              }}
+            </div>
+            <div class="base-currency">
+              <span class="base-currency-code"
+                >{{ costs.baseCurrency.currency }}
+              </span>
+              {{
+                getCostItemCostEx(
+                  COST_TYPES.SCREENED,
+                  costItem.costs,
+                  costs.baseCurrency.exchangeRate
+                ) | currency: "":""
+              }}
+            </div>
+          </td>
+          <td>
+            <div
+              (click)="
+                costItem.comments && toggleComments(tableIndex, rowIndex)
+              "
+              class="comments-icon"
+            >
+              <span class="material-icons-outlined"> chat_outline </span>
+              <span>{{
+                costItem.comments ? costItem.comments.length : 0
+              }}</span>
+            </div>
+          </td>
+        </tr>
+
+        <tr
+          *ngFor="let comment of costItem.comments"
+          class="comments-section"
+          [class]="
+            displayCommentsSection(tableIndex, rowIndex) ? 'show' : 'hide'
+          "
+        >
+          <td colspan="5">
+            <div class="item type">
+              <span [class]="comment.type === 'Internal' ? 'white' : 'grey'">{{
+                comment.type
+              }}</span>
+            </div>
+            <div class="item comment">{{ comment.comment }}</div>
+            <div class="right">
+              <span class="item author">{{ comment.author }}</span>
+              <span class="item date-time">{{
+                comment.date | date: "d MMM y HH:mm"
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="total-section">
+          <td *ngIf="cost.name === 'Port Expenses'" colspan="2" class="title">
+            Total
+          </td>
+          <td *ngIf="cost.name !== 'Port Expenses'" colspan="1" class="title">
+            Total
+          </td>
+
+          <td>
+            <div class="dark-currency">
+              <span class="dark-currency-code"
+                >{{ selectedCurrencyInfo.toCurrency }} </span
+              >{{
+                getTableTotal(
+                  COST_TYPES.QUOTED,
+                  cost.costItems,
+                  selectedCurrencyInfo.exchangeRate
+                ).exchangedTotal | currency: "":""
+              }}
+            </div>
+            <div class="base-currency">
+              <span class="base-currency-code"
+                >{{ costs.baseCurrency.currency }}
+              </span>
+              {{
+                getTableTotal(
+                  COST_TYPES.QUOTED,
+                  cost.costItems,
+                  costs.baseCurrency.exchangeRate
+                ).usdTotal | currency: "":""
+              }}
+            </div>
+          </td>
+          <td>
+            <div class="dark-currency">
+              <span class="dark-currency-code"
+                >{{ selectedCurrencyInfo.toCurrency }}
+              </span>
+              {{
+                getTableTotal(
+                  COST_TYPES.SCREENED,
+                  cost.costItems,
+                  selectedCurrencyInfo.exchangeRate
+                ).exchangedTotal | currency: "":""
+              }}
+            </div>
+            <div class="base-currency">
+              <span class="base-currency-code"
+                >{{ costs.baseCurrency.currency }}
+              </span>
+              {{
+                getTableTotal(
+                  COST_TYPES.SCREENED,
+                  cost.costItems,
+                  costs.baseCurrency.exchangeRate
+                ).exchangedTotal | currency: "":""
+              }}
+            </div>
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </div>
   <div *ngIf="!costs && !exchangeRates">

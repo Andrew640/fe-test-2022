@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Costs, CostTypeItemCost } from 'src/app/interfaces/costs.interface';
+import {
+  Costs,
+  CostTypeItem,
+  CostTypeItemCost,
+} from 'src/app/interfaces/costs.interface';
 import {
   ExchangeRates,
   ExchangeRatesPaymentCurrency,
@@ -9,6 +13,16 @@ import {
 export enum COST_TYPES {
   QUOTED = 'Quoted',
   SCREENED = 'Screened',
+}
+
+export interface Comments {
+  tableIndex: number;
+  rows: CommentsRows[];
+}
+
+export interface CommentsRows {
+  rowIndex: number;
+  toggled: boolean;
 }
 
 @Component({
@@ -21,6 +35,7 @@ export class HomeComponent {
   exchangeRates: ExchangeRates;
   COST_TYPES = COST_TYPES;
   selectedCurrencyInfo: ExchangeRatesPaymentCurrency;
+  comments: Comments[] = [];
 
   constructor(private route: ActivatedRoute) {
     this.costs = this.route.snapshot.data['costs'];
@@ -28,6 +43,8 @@ export class HomeComponent {
     this.selectedCurrencyInfo = this.exchangeRates.paymentCurrencies.filter(
       (currency) => currency.toCurrency === 'SGD'
     )[0];
+
+    this.createToggleArray();
   }
 
   // TODO: If cost type not found will error
@@ -52,5 +69,53 @@ export class HomeComponent {
     exchangeRate: number
   ): number {
     return this.getCostItemCost(type, costTypeItemCosts).amount * exchangeRate;
+  }
+
+  public toggleComments(tableIndex: number, rowIndex: number): void {
+    this.comments[tableIndex].rows[rowIndex].toggled =
+      !this.comments[tableIndex].rows[rowIndex].toggled;
+  }
+
+  public displayCommentsSection(tableIndex: number, rowIndex: number): boolean {
+    return this.comments[tableIndex].rows[rowIndex].toggled;
+  }
+
+  private createToggleArray(): void {
+    this.comments = this.costs.costs.map((cost, costIndex) => ({
+      tableIndex: costIndex,
+      rows: cost.costItems.map((costItem, costItemIndex) => ({
+        rowIndex: costItemIndex,
+        toggled: false,
+      })),
+    }));
+  }
+
+  public getTableTotal(
+    type: COST_TYPES.QUOTED | COST_TYPES.SCREENED,
+    costTypeItems: CostTypeItem[],
+    exchangeRate: number
+  ): { usdTotal: number; exchangedTotal: number } {
+    let usdTotal: number = 0;
+    let exchangedTotal: number = 0;
+    costTypeItems.map((costTypeItemsCosts) => {
+      usdTotal +=
+        Math.round(
+          this.getCostItemCostEx(
+            type,
+            costTypeItemsCosts.costs,
+            this.costs.baseCurrency.exchangeRate
+          ) * 100
+        ) / 100;
+
+      exchangedTotal += this.getCostItemCostEx(
+        type,
+        costTypeItemsCosts.costs,
+        exchangeRate
+      );
+    });
+    return {
+      usdTotal,
+      exchangedTotal,
+    };
   }
 }

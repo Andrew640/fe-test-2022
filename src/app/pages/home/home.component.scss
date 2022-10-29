@@ -22,26 +22,147 @@
 
   table {
     font-family: "Roboto", sans-serif;
+    font-size: 16px;
     width: 100%;
     margin-bottom: 50px;
     border-collapse: collapse;
-    border: 1px solid #e4e4e4;
-  }
+    border: 1px solid $grey-light;
 
-  th {
-    background-color: $brand-blue;
-    font-weight: 400;
-    color: #fff;
-  }
+    td,
+    th {
+      width: 20%;
+      padding: 10px;
+      text-align: left;
 
-  td,
-  th {
-    font-family: "Roboto", sans-serif;
-    width: 25%;
-    padding: 10px;
-    text-align: left;
-    &.wider {
-      width: 50%;
+      &.wider {
+        width: 40%;
+      }
+
+      .comments-icon {
+        display: flex;
+        align-items: center;
+        .material-icons-outlined {
+          color: $grey;
+          cursor: pointer;
+          user-select: none;
+          width: 30px;
+        }
+      }
+    }
+
+    th {
+      background-color: $brand-blue;
+      font-weight: 400;
+      color: #fff;
+
+      &.quoted {
+        text-align: right;
+      }
+    }
+
+    tr {
+      &.main {
+        border-bottom: 1px solid $grey-light;
+      }
+      &.total-section {
+        border-top: 2px solid $grey;
+        .title {
+          font-weight: 700;
+        }
+      }
+    }
+
+    .screened-currency {
+      border: 1px solid $grey;
+      border-radius: 2px;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &-code {
+        margin-right: 4px;
+        color: $grey;
+        font-size: 14px;
+      }
+    }
+
+    .dark-currency {
+      display: flex;
+      align-items: center;
+      justify-content: right;
+
+      &-code {
+        margin-right: 4px;
+      }
+    }
+
+    .base-currency {
+      display: flex;
+      align-items: center;
+      padding-top: 8px;
+      justify-content: right;
+      color: $grey;
+      font-size: 14px;
+
+      &-code {
+        margin-right: 4px;
+      }
+    }
+
+    .comments-section {
+      margin-left: 10px;
+      background-color: $brand-blue-light;
+
+      &:last-of-type {
+        border-bottom: 1px solid $grey-light;
+      }
+
+      &.show {
+        height: 100%;
+      }
+
+      &.hide {
+        display: none;
+        height: 0px;
+      }
+
+      .right {
+        float: right;
+      }
+
+      .item {
+        display: inline-block;
+        &.type {
+          width: 15%;
+          span {
+            font-size: 14px;
+            border: 1px solid $grey;
+            border-radius: 10px;
+            padding: 2px 10px;
+            &.white {
+              color: $grey;
+              background-color: #fff;
+            }
+            &.grey {
+              color: #fff;
+              background-color: $grey;
+            }
+          }
+        }
+
+        &.comment {
+          margin-right: 20px;
+        }
+
+        &.author {
+          margin-right: 10px;
+        }
+
+        &.date-time {
+          color: $grey;
+        }
+      }
     }
   }
 
