@@ -7,15 +7,22 @@
   header {
     display: flex;
     justify-content: space-between;
-    .title {
-      margin-bottom: 20px;
-    }
+    align-items: center;
+    margin-bottom: 20px;
+
     .currency-select {
       label {
         margin-right: 20px;
       }
       select {
-        width: 100px;
+        width: 140px;
+        padding: 4px;
+      }
+      .default {
+        margin-left: 10px;
+      }
+      .bold {
+        font-weight: 700;
       }
     }
   }
@@ -27,6 +34,7 @@
     margin-bottom: 50px;
     border-collapse: collapse;
     border: 1px solid $grey-light;
+    border-radius: $border-radius;
 
     td,
     th {
@@ -41,6 +49,7 @@
       .comments-icon {
         display: flex;
         align-items: center;
+        justify-content: right;
         .material-icons-outlined {
           color: $grey;
           cursor: pointer;
@@ -74,7 +83,7 @@
 
     .screened-currency {
       border: 1px solid $grey;
-      border-radius: 2px;
+      border-radius: $border-radius;
       padding: 8px;
       display: flex;
       justify-content: space-between;

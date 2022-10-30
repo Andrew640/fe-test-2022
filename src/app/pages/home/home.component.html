@@ -138,8 +138,8 @@
                 getTableTotal(
                   COST_TYPES.QUOTED,
                   cost.costItems,
-                  selectedCurrencyInfo.exchangeRate
-                ).exchangedTotal | currency: "":""
+                  TOTAL_TYPES.EXCHANGED
+                ) | currency: "":""
               }}
             </div>
             <div class="base-currency">
@@ -150,8 +150,8 @@
                 getTableTotal(
                   COST_TYPES.QUOTED,
                   cost.costItems,
-                  costs.baseCurrency.exchangeRate
-                ).usdTotal | currency: "":""
+                  TOTAL_TYPES.BASE
+                ) | currency: "":""
               }}
             </div>
           </td>
@@ -164,8 +164,8 @@
                 getTableTotal(
                   COST_TYPES.SCREENED,
                   cost.costItems,
-                  selectedCurrencyInfo.exchangeRate
-                ).exchangedTotal | currency: "":""
+                  TOTAL_TYPES.EXCHANGED
+                ) | currency: "":""
               }}
             </div>
             <div class="base-currency">
@@ -176,8 +176,8 @@
                 getTableTotal(
                   COST_TYPES.SCREENED,
                   cost.costItems,
-                  costs.baseCurrency.exchangeRate
-                ).exchangedTotal | currency: "":""
+                  TOTAL_TYPES.BASE
+                ) | currency: "":""
               }}
             </div>
           </td>
