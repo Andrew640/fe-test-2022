@@ -9,21 +9,15 @@ import {
   ExchangeRates,
   ExchangeRatesPaymentCurrency,
 } from 'src/app/interfaces/exchange-rates.interface';
-
-export enum COST_TYPES {
-  QUOTED = 'Quoted',
-  SCREENED = 'Screened',
-}
-
-export interface Comments {
-  tableIndex: number;
-  rows: CommentsRows[];
-}
-
-export interface CommentsRows {
-  rowIndex: number;
-  toggled: boolean;
-}
+import {
+  Comments,
+  CostTypes,
+  COST_TYPES,
+  emptyQuotedCost,
+  emptyScreenedCost,
+  TotalTypes,
+  TOTAL_TYPES,
+} from 'src/app/interfaces/home.interface';
 
 @Component({
   selector: 'app-home',
@@ -34,6 +28,7 @@ export class HomeComponent {
   costs: Costs;
   exchangeRates: ExchangeRates;
   COST_TYPES = COST_TYPES;
+  TOTAL_TYPES = TOTAL_TYPES;
   selectedCurrencyInfo: ExchangeRatesPaymentCurrency;
   comments: Comments[] = [];
 
@@ -43,23 +38,24 @@ export class HomeComponent {
     this.selectedCurrencyInfo = this.exchangeRates.paymentCurrencies.filter(
       (currency) => currency.toCurrency === 'SGD'
     )[0];
-
+    console.log(this.selectedCurrencyInfo);
     this.createToggleArray();
   }
 
-  // TODO: If cost type not found will error
   private getCostItemCost(
     type: COST_TYPES.QUOTED | COST_TYPES.SCREENED,
     costTypeItemCosts: CostTypeItemCost[]
   ): CostTypeItemCost {
-    if (type === COST_TYPES.QUOTED) {
-      return costTypeItemCosts.filter(
-        (costTypeItemCost) => costTypeItemCost.type === COST_TYPES.QUOTED
-      )[0];
+    let costTypeItemCost = costTypeItemCosts.filter((costTypeItemCost) =>
+      type === COST_TYPES.QUOTED
+        ? costTypeItemCost.type === COST_TYPES.QUOTED
+        : costTypeItemCost.type === COST_TYPES.SCREENED
+    );
+
+    if (costTypeItemCost.length > 0) {
+      return costTypeItemCost[0];
     } else {
-      return costTypeItemCosts.filter(
-        (costTypeItemCost) => costTypeItemCost.type === COST_TYPES.SCREENED
-      )[0];
+      return type === COST_TYPES.QUOTED ? emptyQuotedCost : emptyScreenedCost;
     }
   }
 
@@ -68,16 +64,22 @@ export class HomeComponent {
     costTypeItemCosts: CostTypeItemCost[],
     exchangeRate: number
   ): number {
-    return this.getCostItemCost(type, costTypeItemCosts).amount * exchangeRate;
+    return (
+      Math.round(
+        this.getCostItemCost(type, costTypeItemCosts).amount *
+          exchangeRate *
+          100
+      ) / 100
+    );
+  }
+
+  public displayCommentsSection(tableIndex: number, rowIndex: number): boolean {
+    return this.comments[tableIndex].rows[rowIndex].toggled;
   }
 
   public toggleComments(tableIndex: number, rowIndex: number): void {
     this.comments[tableIndex].rows[rowIndex].toggled =
       !this.comments[tableIndex].rows[rowIndex].toggled;
-  }
-
-  public displayCommentsSection(tableIndex: number, rowIndex: number): boolean {
-    return this.comments[tableIndex].rows[rowIndex].toggled;
   }
 
   private createToggleArray(): void {
@@ -91,31 +93,29 @@ export class HomeComponent {
   }
 
   public getTableTotal(
-    type: COST_TYPES.QUOTED | COST_TYPES.SCREENED,
+    costType: CostTypes,
     costTypeItems: CostTypeItem[],
-    exchangeRate: number
-  ): { usdTotal: number; exchangedTotal: number } {
-    let usdTotal: number = 0;
-    let exchangedTotal: number = 0;
+    totalType: TotalTypes
+  ): number {
+    let total: number = 0;
     costTypeItems.map((costTypeItemsCosts) => {
-      usdTotal +=
-        Math.round(
-          this.getCostItemCostEx(
-            type,
-            costTypeItemsCosts.costs,
-            this.costs.baseCurrency.exchangeRate
-          ) * 100
-        ) / 100;
-
-      exchangedTotal += this.getCostItemCostEx(
-        type,
-        costTypeItemsCosts.costs,
-        exchangeRate
-      );
+      total += this.calculateTotal(costType, totalType, costTypeItemsCosts);
     });
-    return {
-      usdTotal,
-      exchangedTotal,
-    };
+    return total;
+  }
+
+  private calculateTotal(
+    costType: COST_TYPES.QUOTED | COST_TYPES.SCREENED,
+    totalType: TotalTypes,
+    costTypeItemsCosts: CostTypeItem
+  ): number {
+    let rawTotal = this.getCostItemCostEx(
+      costType,
+      costTypeItemsCosts.costs,
+      totalType === TOTAL_TYPES.BASE
+        ? this.costs.baseCurrency.exchangeRate
+        : this.selectedCurrencyInfo.exchangeRate
+    );
+    return Math.round(rawTotal * 100) / 100;
   }
 }

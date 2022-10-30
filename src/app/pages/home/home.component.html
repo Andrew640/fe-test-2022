@@ -12,6 +12,14 @@
             {{ currencyInfo.toCurrency }}
           </option>
         </select>
+        <span class="default">1 USD = </span>
+        <span class="bold">
+          {{
+            selectedCurrencyInfo.exchangeRate / costs.baseCurrency.exchangeRate
+              | currency: "":""
+          }}
+          {{ selectedCurrencyInfo.toCurrency }}</span
+        >
       </div>
     </header>
     <table *ngFor="let cost of costs.costs; let tableIndex = index">
